@@ -131,14 +131,14 @@
     const SIGN_PROP=3,CARDBOARD_PROP=4,NEW_PROP_SHARE=.05;
     const SIGN_SLOW={duration:.5,factor:.72},CARDBOARD_SLOW={duration:.35,factor:.9};
     const CARDBOARD_STUN=.9,CARDBOARD_COLLAPSE=.24;
-    const MILESTONE_810_DISTANCE=810,MILESTONE_810_DURATION=1;
+    const BIG_EVENT_DISTANCES=[810,1919,4545],BIG_EVENT_DURATION=1;
     const ADDITIONAL_PROPS={
       [SIGN_PROP]:{width:.86,build:buildSignProp},
       [CARDBOARD_PROP]:{width:1.03,build:buildCardboardProp}
     };
     const milestone810Banner=$('milestone810');
     const dangerEl=$('danger');let caughtByName='';
-    let signSlow=0,cardboardSlow=0,milestone810Fired=false,milestone810Remaining=0;
+    let signSlow=0,cardboardSlow=0,bigEventRemaining=0;const bigEventsFired=new Set();
     function pickPropVariant(roll,firstWeight,secondWeight){
       const originalShare=1-2*NEW_PROP_SHARE;
       if(roll>=1-NEW_PROP_SHARE)return CARDBOARD_PROP;
@@ -193,19 +193,22 @@
       return progress===1;
     }
     function resetAdditionalEffects(){
-      signSlow=cardboardSlow=milestone810Remaining=0;
-      milestone810Fired=false;
+      signSlow=cardboardSlow=bigEventRemaining=0;
+      bigEventsFired.clear();
       milestone810Banner.hidden=true;
     }
     function tickMilestone810(dt){
-      if(!milestone810Fired&&dist>=MILESTONE_810_DISTANCE){
-        milestone810Fired=true;
-        milestone810Remaining=MILESTONE_810_DURATION;
-        milestone810Banner.hidden=false;
+      for(const d of BIG_EVENT_DISTANCES){
+        if(!bigEventsFired.has(d)&&dist>=d){
+          bigEventsFired.add(d);
+          bigEventRemaining=BIG_EVENT_DURATION;
+          milestone810Banner.textContent=d;
+          milestone810Banner.hidden=false;
+        }
       }
-      const pause=Math.min(dt,milestone810Remaining);
-      milestone810Remaining-=pause;
-      if(pause>0&&milestone810Remaining===0)milestone810Banner.hidden=true;
+      const pause=Math.min(dt,bigEventRemaining);
+      bigEventRemaining-=pause;
+      if(pause>0&&bigEventRemaining===0)milestone810Banner.hidden=true;
       return pause;
     }
     // One reusable media element, initialized on the Start/Retry gesture.
