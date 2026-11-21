@@ -44,6 +44,11 @@
     #knob{position:absolute;left:37px;top:37px;width:36px;height:36px;border:2px solid #ffcf8b;border-radius:50%;background:#ffb85688;pointer-events:none}
     #final{font-size:54px;color:#ffbf65}
     #toast{max-width:calc(100vw - 24px);width:max-content;white-space:normal}
+    #cutin{position:absolute;top:17%;right:0;display:flex;gap:8px;align-items:center;background:#14182ae8;border-left:4px solid #ffbb62;padding:6px 10px 6px 6px;z-index:3;pointer-events:none;max-width:64vw}
+    #cutin img{height:64px;width:auto;max-width:30vw;object-fit:contain;background:#0c0f1e}
+    #cutinName{font-weight:850;font-size:14px}
+    #cutinQuote{font-size:12px;color:#ffe0aa}
+    #shareX{background:#14182a;color:#ffe0aa;border:1px solid #bc986c;font-size:13px;padding:9px 16px;box-shadow:none}
     #ach{position:absolute;top:12%;left:50%;transform:translateX(-50%);white-space:nowrap;background:#171a2cf0;border:1px solid #d8b25c;color:#ffe9b0;padding:8px 16px;font-size:15px;font-weight:850;z-index:4;pointer-events:none}
     .over{font-size:13px;line-height:1.65;margin-top:8px}.over div+div{color:#ffcb90}
     #joy.on{opacity:1}
@@ -52,10 +57,10 @@
     @media(pointer:coarse),(max-width:700px){.playing #joy{display:block}.playing #foot{display:none}#cover{background:linear-gradient(90deg,#101427e5,#101427a0 75%,#10142750)}.sheet{max-width:94%}.jp{margin-top:14px}.help{font-size:11px}}
     @media(max-height:510px){.bar{top:max(8px,env(safe-area-inset-top))}#cover{align-items:flex-start;padding:calc(30px + env(safe-area-inset-top)) 6vw 10px;overflow:auto;pointer-events:auto}#cover .sheet{margin-block:auto}.jp,p{margin:6px 0}h1{font-size:42px}#foot{display:none}.help{font-size:10px}.over{font-size:11px;line-height:1.45}#final{font-size:36px}}
     </style><div id="stage"></div><div class="shade"></div><div class="bar"><div class="brand"><i class="rec"></i>REC<span class="sub">COAT / NIGHT UNIT</span></div><div id="stats" hidden><b id="meters">0000</b> m<span class="sub" id="crew"></span></div></div>
-    <div id="cover"><main class="sheet"><div class="kicker"><span class="tag" id="take">TAKE 01</span> NIGHT CHASE</div><div id="intro"><div class="jp">真夏の夜の淫夢</div><h1>深夜ロケ<br><em>逃走劇。</em></h1><p>転がれ、野獣先輩。<br>撮影クルーを振り切って、夜の坂道をどこまでも。</p></div><div id="ending" hidden><div class="jp">撮影クルーに確保された！</div><h1>カット！</h1><div class="over" id="overQuote"><div id="overFirst"></div><div id="overSecond"></div></div><p>逃走距離　<b id="final"></b> m<br><small id="best"></small><br><small id="caughtBy"></small><br><small id="achList"></small></p></div><button id="go" disabled>準備中…</button><div class="help" id="help">← → / A D：左右移動　↑ / W：加速　↓ / S：減速<br>スマホ：画面のどこを触ってもスティックが出る。100 m ごとに追手が1人増える。</div></main></div>
+    <div id="cover"><main class="sheet"><div class="kicker"><span class="tag" id="take">TAKE 01</span> NIGHT CHASE</div><div id="intro"><div class="jp">真夏の夜の淫夢</div><h1>深夜ロケ<br><em>逃走劇。</em></h1><p>転がれ、野獣先輩。<br>撮影クルーを振り切って、夜の坂道をどこまでも。</p></div><div id="ending" hidden><div class="jp">撮影クルーに確保された！</div><h1>カット！</h1><div class="over" id="overQuote"><div id="overFirst"></div><div id="overSecond"></div></div><p>逃走距離　<b id="final"></b> m<br><small id="best"></small><br><small id="caughtBy"></small><br><small id="achList"></small></p><button id="shareX" type="button">Xに投稿する</button></div><button id="go" disabled>準備中…</button><div class="help" id="help">← → / A D：左右移動　↑ / W：加速　↓ / S：減速<br>スマホ：画面のどこを触ってもスティックが出る。100 m ごとに追手が1人増える。</div></main></div>
     <div id="danger"></div>
     <div id="milestone810" hidden>810</div>
-    <div id="toast" hidden><span id="event"></span><span id="quote"></span></div><div id="ach" hidden></div><div id="foot">STUDIO DISTRICT　/　MIDNIGHT EXTERIOR</div><div id="joy" aria-label="移動スティック"><div id="knob"></div></div><button id="mute" type="button" aria-label="ミュート" aria-pressed="false">音声 ON</button>
+    <div id="toast" hidden><span id="event"></span><span id="quote"></span></div><div id="ach" hidden></div><div id="cutin" hidden><img id="cutinImg" alt=""><div><div id="cutinName"></div><div id="cutinQuote"></div></div></div><div id="foot">STUDIO DISTRICT　/　MIDNIGHT EXTERIOR</div><div id="joy" aria-label="移動スティック"><div id="knob"></div></div><button id="mute" type="button" aria-label="ミュート" aria-pressed="false">音声 ON</button>
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script><script>
     (()=>{'use strict';const $=s=>document.getElementById(s),go=$('go');
     if(!window.THREE){go.textContent='再読み込み';go.disabled=false;go.onclick=()=>location.reload();$('help').textContent='3Dライブラリを読み込めませんでした。通信を確認してください。';return}
@@ -201,7 +206,9 @@
     }
     const ACH_DEF=[810,1919,4545];let ach={};try{ach=JSON.parse(localStorage.coatAch||'{}')}catch{}let achTimer=0;
     function unlockAch(d){if(ach[d])return;ach[d]=1;try{localStorage.coatAch=JSON.stringify(ach)}catch{}const el=$('ach');el.textContent='実績解除　'+d+' m 到達';el.hidden=false;achTimer=2.6}
-    function tickMilestone810(dt){if(achTimer>0){achTimer-=dt;if(achTimer<=0)$('ach').hidden=true}
+    let cutinTimer=0;
+    function showCutin(imgSrc,name,quote){const c=$('cutin');$('cutinImg').src=imgSrc;$('cutinName').textContent=name;$('cutinQuote').textContent='「'+quote+'」';c.hidden=false;cutinTimer=1.7}
+    function tickMilestone810(dt){if(achTimer>0){achTimer-=dt;if(achTimer<=0)$('ach').hidden=true}if(cutinTimer>0){cutinTimer-=dt;if(cutinTimer<=0)$('cutin').hidden=true}
       for(const d of BIG_EVENT_DISTANCES){
         if(!bigEventsFired.has(d)&&dist>=d){
           bigEventsFired.add(d);
@@ -240,7 +247,7 @@
     function drop(a){world.remove(a.p)}
     function setup(){resetAdditionalEffects();caughtByName='';actors.forEach(drop);props.forEach(drop);actors.length=props.length=0;nearActors.clear();dist=x=vx=y=vy=air=slow=damage=0;next=20;speed=14;pending=[];shown=pausedQuote=null;timer=0;runIn=7+rnd()*5;nearIn=0;mark=0;nextDense=165;denseUntil=0;warnings=[];stageStep=0;theme(0);addCrew();prop(13,0,-3.9);prop(20,1,3);next=29}
     function take(){return 'TAKE '+String(runs||1).padStart(2,'0')}
-    function gameOver(){mode='end';milestone810Banner.hidden=true;controlsOff();document.body.classList.remove('playing');record=Math.max(record,Math.floor(dist));try{localStorage.coatChaseBest=record}catch{};$('final').textContent=Math.floor(dist);$('best').textContent='自己ベスト　'+record+' m';$('caughtBy').textContent=caughtByName?('確保したのは '+caughtByName+'　／　'+stages[stageIndex(dist)][0]+'にて'):'';$('achList').textContent='実績　'+ACH_DEF.map(d=>ach[d]?'✓ '+d+' m':'・ '+d+' m').join('　');$('intro').hidden=true;$('ending').hidden=false;$('cover').hidden=false;$('cover').scrollTop=0;$('stats').hidden=true;$('toast').hidden=true;go.textContent='もう一度逃げる　↗';$('take').textContent=take()+' / CUT';let lines=pick(quotes.over),i=quotes.over.indexOf(lines);overSound(i);$('overFirst').textContent=(i>=2?'谷岡':'追手')+'：「'+lines[0]+'」';$('overSecond').textContent=(i===3?'KYN清野':'野獣先輩')+'：「'+lines[1]+'」';go.focus({preventScroll:true})}
+    function gameOver(){mode='end';milestone810Banner.hidden=true;controlsOff();document.body.classList.remove('playing');record=Math.max(record,Math.floor(dist));try{localStorage.coatChaseBest=record}catch{};$('final').textContent=Math.floor(dist);$('best').textContent='自己ベスト　'+record+' m';$('caughtBy').textContent=caughtByName?('確保したのは '+caughtByName+'　／　'+stages[stageIndex(dist)][0]+'にて'):'';$('achList').textContent='実績　'+ACH_DEF.map(d=>ach[d]?'✓ '+d+' m':'・ '+d+' m').join('　');$('shareX').onclick=()=>{const t='『真夏の夜の淫夢｜深夜ロケ逃走劇』で '+Math.floor(dist)+' m 逃げた！　確保したのは '+(caughtByName||'撮影クルー')+'。自己ベスト '+record+' m。\nhttps://yobankobu-cmd.github.io/inmu-game-play/\n#真夏の夜の淫夢';window.open('https://x.com/intent/post?text='+encodeURIComponent(t),'_blank')};$('intro').hidden=true;$('ending').hidden=false;$('cover').hidden=false;$('cover').scrollTop=0;$('stats').hidden=true;$('toast').hidden=true;go.textContent='もう一度逃げる　↗';$('take').textContent=take()+' / CUT';let lines=pick(quotes.over),i=quotes.over.indexOf(lines);overSound(i);$('overFirst').textContent=(i>=2?'谷岡':'追手')+'：「'+lines[0]+'」';$('overSecond').textContent=(i===3?'KYN清野':'野獣先輩')+'：「'+lines[1]+'」';go.focus({preventScroll:true})}
     const keys=new Set(),joy=$('joy'),knob=$('knob');const stickRadius=38,stickDeadZone=5;let jx=0,jy=0,pid=null,stickCenterX=0,stickCenterY=0;
     function resetJoy(){const pointerId=pid;pid=null;jx=jy=0;knob.style.transform='';joy.classList.remove('on');joy.style.left='';joy.style.top='';joy.style.bottom='';joy.style.transform='';if(pointerId!==null&&joy.hasPointerCapture(pointerId))joy.releasePointerCapture(pointerId)}
     function controlsOff(){keys.clear();resetJoy()}
@@ -263,7 +270,7 @@
     const frameStartDist=dist,frameSpeedFactor=additionalSpeedFactor();let target=(slow?7:15+th*5)*frameSpeedFactor;speed+=(target-speed)*(1-Math.exp(-2*dt));dist+=speed*dt;
     let crossed=Math.floor(dist/300);while(stageStep<crossed)stageToast(++stageStep%stages.length);let si=stageIndex(dist);if(si!==activeStage)theme(si);
     air=Math.max(0,air-dt);if(air){vy-=20*dt;y=Math.max(.02,y+vy*dt)}else{y=0;vy=0}
-    while(actors.length<=Math.floor(dist/100)){let a=addCrew();queue('add',a.name+'「'+a.quote+'」');enqueueSound(qprio.add,a.id===0?CLIP.spawn14:a.id===1?CLIP.spawn01:a.id===16?CLIP.spawn01:a.id===15?CLIP.spawn01:a.id===7?CLIP.spawn07:a.id===12?CLIP.spawn12:a.id===2?CLIP.spawn02:a.id===4?CLIP.spawn04:a.id===9?CLIP.spawn09:'audio/spawn'+String(a.id).padStart(2,'0')+'.mp3')}
+    while(actors.length<=Math.floor(dist/100)){let a=addCrew();queue('add',a.name+'「'+a.quote+'」');const cik=CHASER_IMG[a.name];if(cik)showCutin(IMGS[cik],a.name,a.quote);enqueueSound(qprio.add,a.id===0?CLIP.spawn14:a.id===1?CLIP.spawn01:a.id===16?CLIP.spawn01:a.id===15?CLIP.spawn01:a.id===7?CLIP.spawn07:a.id===12?CLIP.spawn12:a.id===2?CLIP.spawn02:a.id===4?CLIP.spawn04:a.id===9?CLIP.spawn09:'audio/spawn'+String(a.id).padStart(2,'0')+'.mp3')}
     while(mark<quotes.milestone.length&&dist>=quotes.milestone[mark][0]){let[m,line]=quotes.milestone[mark++];queue('milestone',line,' / '+m+' m')}
     while(next<dist+90){if(next>=nextDense){warnings.push(next-10);denseUntil=next+25;nextDense=next+160+rnd()*50}let dense=next<denseUntil,lane=(Math.floor(rnd()*5)-2)*2.55,typ=pickProp(next);prop(next,typ,lane);if(dense||rnd()<.28)prop(next,pickProp(next),lane>0?-3.6:3.6);next+=dense?5+rnd()*2:8+rnd()*6}
     while(warnings.length&&dist>=warnings[0]){if(dist-warnings.shift()<30)queue('warn')}
